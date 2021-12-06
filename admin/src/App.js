@@ -28,7 +28,7 @@ const {
 	Voucher,
 	Payattitude,
 } = PaymentLogos;
-import React from "react";
+import React, { Fragment } from "react";
 const Overview = () => {
 	const hasWindow = typeof window !== "undefined";
 	const width = hasWindow ? window.innerWidth : null;
@@ -39,7 +39,7 @@ const Overview = () => {
 	const Heading_2 = "Why Flutterwave?";
 	const label = "Finish Setup";
 	return (
-		<>
+		<Fragment>
 			<div className="flutterwave-container">
 				<div className="flutterwave-body">
 					{/* top */}
@@ -98,7 +98,7 @@ const Overview = () => {
 					</div>
 				</div>
 			</div>
-		</>
+		</Fragment>
 	);
 };
 
