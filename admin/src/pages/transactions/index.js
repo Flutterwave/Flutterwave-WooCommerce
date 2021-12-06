@@ -41,8 +41,8 @@ const Transactions = () => {
 			Object.keys(data).forEach(function (key) {
 				arr.push(data[key]);
 			});
-			// setTransactions(arr);
-			setTransactions([]);
+			setTransactions(arr);
+			//setTransactions([]);
 			setLoading(false);
 		});
 	}, []);
