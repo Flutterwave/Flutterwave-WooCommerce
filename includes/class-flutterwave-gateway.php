@@ -105,9 +105,9 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
 		$this->form_fields = array(
 			'enabled' => array(
 			  'title'       => __( 'Enable/Disable', 'flw-payments' ),
-			  'label'       => __( 'Enable Rave Payment Gateway', 'flw-payments' ),
+			  'label'       => __( 'Enable  Flutterwave', 'flw-payments' ),
 			  'type'        => 'checkbox',
-			  'description' => __( 'Enable Rave Payment Gateway as a payment option on the checkout page', 'flw-payments' ),
+			  'description' => __( 'Enable Flutterwave as a payment option on the checkout page', 'flw-payments' ),
 			  'default'     => 'no',
 			  'desc_tip'    => true
 			),
@@ -144,13 +144,13 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
 			  'title'       => __( 'Enter Secret Hash', 'flw-payments' ),
 			  'type'        => 'text',
 			  'description' => __( 'Ensure that <b>SECRET HASH</b> is the same with the one on your Rave dashboard', 'flw-payments' ),
-			  'default'     => 'Rave-Secret-Hash'
+			  'default'     => 'Flutterwave-Secret-Hash'
 			),
 			'title' => array(
 			  'title'       => __( 'Payment method title', 'flw-payments' ),
 			  'type'        => 'text',
 			  'description' => __( 'Optional', 'flw-payments' ),
-			  'default'     => 'Rave'
+			  'default'     => 'Flutterwave'
 			),
 			'description' => array(
 			  'title'       => __( 'Payment method description', 'flw-payments' ),
@@ -159,25 +159,25 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
 			  'default'     => 'Powered by Flutterwave: Accepts Mastercard, Visa, Verve, Discover, AMEX, Diners Club and Union Pay.'
 			),
 			'test_public_key' => array(
-			  'title'       => __( 'Rave Test Public Key', 'flw-payments' ),
+			  'title'       => __( 'Flutterwave Test Public Key', 'flw-payments' ),
 			  'type'        => 'text',
 			  // 'description' => __( 'Required! Enter your Rave test public key here', 'flw-payments' ),
 			  'default'     => ''
 			),
 			'test_secret_key' => array(
-			  'title'       => __( 'Rave Test Secret Key', 'flw-payments' ),
+			  'title'       => __( 'Flutterwave Test Secret Key', 'flw-payments' ),
 			  'type'        => 'text',
 			  // 'description' => __( 'Required! Enter your Rave test secret key here', 'flw-payments' ),
 			  'default'     => ''
 			),
 			'live_public_key' => array(
-			  'title'       => __( 'Rave Live Public Key', 'flw-payments' ),
+			  'title'       => __( 'Flutterwave Live Public Key', 'flw-payments' ),
 			  'type'        => 'text',
 			  // 'description' => __( 'Required! Enter your Rave live public key here', 'flw-payments' ),
 			  'default'     => ''
 			),
 			'live_secret_key' => array(
-			  'title'       => __( 'Rave Live Secret Key', 'flw-payments' ),
+			  'title'       => __( 'Flutterwave Live Secret Key', 'flw-payments' ),
 			  'type'        => 'text',
 			  // 'description' => __( 'Required! Enter your Rave live secret key here', 'flw-payments' ),
 			  'default'     => ''
