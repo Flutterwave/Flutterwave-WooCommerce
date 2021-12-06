@@ -515,7 +515,6 @@ class FlutterwaveSdk {
             tx_ref: "' . $this->txref . '",
             amount: ' . $this->amount . ',
             currency: "' . $this->currency . '",
-            country: "' . $this->country . '",
             payment_options: "card,ussd,mpesa,barter,mobilemoneyghana,mobilemoneyrwanda,mobilemoneyzambia,mobilemoneyuganda,mobilemoneyfranco,banktransfer,account",
             redirect_url:"' . $this->redirectUrl . '",
             customer: {
