@@ -50,6 +50,10 @@ For FTP manual installation, [check here](http://codex.wordpress.org/Managing_Pl
 
 == Frequently Asked Questions ==
 
+= What Do I Need To Use The Plugin =
+
+1. You need to open an account on [Flutterwave](https://dashboard.flutterwave.com)
+
 = Does this version support woocommerce blocks =
 
 As a matter of fact. this version does. 
