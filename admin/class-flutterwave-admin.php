@@ -61,12 +61,12 @@ class Flutterwave_Admin {
      *
      * @since    0.1.0
      */
-    // public function add_plugin_admin_menu() 
+    // public function add_plugin_admin_menu()
     // {
     //     // Add woocommerce menu subitem
-    //     add_submenu_page( 
-    //         'woocommerce', 
-    //         'Flutterwave for WooCommerce', 
+    //     add_submenu_page(
+    //         'woocommerce',
+    //         'Flutterwave for WooCommerce',
     //         "PHP page",
     //         'manage_options',
     //         'flutterwave',
@@ -99,7 +99,7 @@ class Flutterwave_Admin {
 		);
 
 
-     
+
         // wc_admin_register_page( array(
         //     'id'       => 'flutterwave-overview',
         //     'title'    => 'Flutterwave',
@@ -183,7 +183,7 @@ class Flutterwave_Admin {
 			return false;
 		}
 
-		$url_params = wp_unslash( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification
+		$url_params = $this->flw_sanitize(wp_unslash( $_GET )); // phpcs:ignore WordPress.Security.NonceVerification
 
 		// if ( empty( $url_params['page'] ) || 'wc-admin' !== $url_params['page'] ) {
 		// 	return;
@@ -209,7 +209,7 @@ class Flutterwave_Admin {
 			// Do not attempt to redirect again.
 			return false;
 		}
-		
+
 		if ( $should_redirect_to_onboarding ) {
 			update_option( 'wcpay_should_redirect_to_onboarding', false );
 		}
@@ -265,8 +265,9 @@ class Flutterwave_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles($hook) {
+		$url_params = $this->flw_sanitize(wp_unslash( $_GET ));
 
-        $url_params = wp_unslash( $_GET );
+
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -286,10 +287,10 @@ class Flutterwave_Admin {
              return;
         }
 
-		$flutterwave_paths = array( 
+		$flutterwave_paths = array(
 			"/overview",
 		 	"/payments/settings",
-		 	"/flutterwave/plans", 
+		 	"/flutterwave/plans",
 		 	"/flutterwave/transactions",
 			"/flutterwave/subaccounts"
 		);
@@ -308,7 +309,7 @@ class Flutterwave_Admin {
 	 */
 	public function enqueue_scripts($hook) {
         global $pagenow, $submenu;
-        $url_params = wp_unslash( $_GET );
+        $url_params = $this->flw_sanitize(wp_unslash( $_GET ));
 		/**
 		 * This function is provided for demonstration purposes only.
 		 *
@@ -326,10 +327,10 @@ class Flutterwave_Admin {
             return;
         }
 
-		$flutterwave_paths = array( 
+		$flutterwave_paths = array(
 			"/overview",
 		 	"/payments/settings",
-		 	"/flutterwave/plans", 
+		 	"/flutterwave/plans",
 		 	"/flutterwave/transactions",
 			"/flutterwave/subaccounts"
 		);
@@ -342,6 +343,20 @@ class Flutterwave_Admin {
         	: array( 'dependencies' => array(), 'version' => filemtime( $script_path ) );
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/overview.js', $script_asset['dependencies'], $script_asset['version'], false );
 		}
+
+	}
+
+	public function flw_sanitize( $input ) {
+
+			// Initialize the new array that will hold the sanitize values
+			$new_input = array();
+
+			// Loop through the input and sanitize each of the values
+			foreach ( $input as $key => $val ) {
+				$new_input[ $key ] = sanitize_text_field( $val );
+			}
+
+			return $new_input;
 
 	}
 

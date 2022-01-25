@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once (WC_FLUTTERWAVE_DIR_PATH. "SDK/library/flutterwaveEventTracker.php");
 
 interface EventHandlerInterface{
@@ -7,37 +7,37 @@ interface EventHandlerInterface{
      * @param object $initializationData This is the initial transaction data as passed
      * */
     function onInit($initializationData);
-    
+
     /**
      * This is called only when a transaction is successful
      * @param object $transactionData This is the transaction data as returned from the Flutterwave payment gateway
      * */
     function onSuccessful($transactionData);
-    
+
     /**
      * This is called only when a transaction failed
      * @param object $transactionData This is the transaction data as returned from the Flutterwave payment gateway
      * */
     function onFailure($transactionData);
-    
+
     /**
      * This is called when a transaction is requeryed from the payment gateway
      * @param string $transactionReference This is the transaction reference as returned from the Flutterwave payment gateway
      * */
     function onRequery($transactionReference);
-    
+
     /**
      * This is called a transaction requery returns with an error
      * @param string $requeryResponse This is the error response gotten from the Flutterwave payment gateway requery call
      * */
     function onRequeryError($requeryResponse);
-    
+
     /**
      * This is called when a transaction is canceled by the user
      * @param string $transactionReference This is the transaction reference as returned from the Flutterwave payment gateway
      * */
     function onCancel($transactionReference);
-    
+
     /**
      * This is called when a transaction doesn't return with a success or a failure response.
      * @param string $transactionReference This is the transaction reference as returned from the Flutterwave payment gateway
@@ -45,13 +45,13 @@ interface EventHandlerInterface{
      * */
     function onTimeout($transactionReference,$data);
 }
-            
+
       // This is where you set how you want to handle the transaction at different stages
       class myEventHandler implements EventHandlerInterface{
-          use Sdk\Library\FlutterwaveEventTracker;
+          use FLW_SDK\FlutterwaveEventTracker;
 
           private $order;
-          
+
           function __construct($order){
             $this->order = $order;
             $payment_method = 'flutterwave';
@@ -67,7 +67,7 @@ interface EventHandlerInterface{
             update_post_meta( $this->order->get_id(), '_flw_payment_txn_ref', $initializationData['tx_ref'] );
             $this->order->add_order_note('Your transaction reference: '.$initializationData['tx_ref']);
           }
-          
+
           /**
            * This is called only when a transaction is successful
            * */
@@ -103,13 +103,13 @@ interface EventHandlerInterface{
                             $this->order->update_status( 'completed' );
 		              }
                       $this->order->add_order_note('Payment was successful on Flutterwave');
-                      $this->order->add_order_note('Flutterwave transaction reference: '.$transactionData['flw_ref']); 
+                      $this->order->add_order_note('Flutterwave transaction reference: '.$transactionData['flw_ref']);
 
                         $customer_note  = 'Thank you for your order.<br>';
                         $customer_note .= 'Your payment was successful, we are now <strong>processing</strong> your order.';
-        
+
                         $this->order->add_order_note( $customer_note, 1 );
-                    
+
                         wc_add_notice( $customer_note, 'notice' );
                   }else{
                       $this->order->update_status( 'on-hold' );
@@ -118,10 +118,10 @@ interface EventHandlerInterface{
                         $customer_note .= 'because the we couldn\t verify your order. Please, contact us for information regarding this order.';
                         $admin_note     = 'Attention: New order has been placed on hold because of incorrect payment amount or currency. Please, look into it. <br>';
                         $admin_note    .= 'Amount paid: '. $transactionData['currency'].' '. $transactionData['amount'].' <br> Order amount: '.$this->order->get_currency().' '. $this->order->get_total().' <br> Reference: '.$transactionData['tx_ref'];
-            
+
                         $this->order->add_order_note( $customer_note, 1 );
                         $this->order->add_order_note( $admin_note );
-            
+
                         wc_add_notice( $customer_note, 'notice' );
                   }
 
@@ -134,11 +134,11 @@ interface EventHandlerInterface{
               }else{
 
                   $this->onFailure($transactionData);
-                  
+
               }
-              
+
           }
-          
+
           /**
            * This is called only when a transaction failed
            * */
@@ -164,10 +164,10 @@ interface EventHandlerInterface{
                 $customer_note .= 'Please, try funding your account.';
 
                 $this->order->add_order_note( $customer_note, 1 );
-            
+
                 wc_add_notice( $customer_note, 'notice' );
           }
-          
+
           /**
            * This is called when a transaction is requeryed from the payment gateway
            * */
@@ -175,7 +175,7 @@ interface EventHandlerInterface{
               // Do something, anything!
               $this->order->add_order_note('Confirming payment on Flutterwave');
           }
-          
+
           /**
            * This is called a transaction requery returns with an error
            * */
@@ -188,13 +188,13 @@ interface EventHandlerInterface{
                 $customer_note .= 'Please, contact us for information regarding this order.';
                 $admin_note     = 'Attention: New order has been placed on hold because we could not confirm the payment. Please, look into it. <br>';
                 $admin_note    .= 'Payment Responce: '.json_encode($requeryResponse);
-    
+
                 $this->order->add_order_note( $customer_note, 1 );
                 $this->order->add_order_note( $admin_note );
-            
+
                 wc_add_notice( $customer_note, 'notice' );
           }
-          
+
           /**
            * This is called when a transaction is canceled by the user
            * */
@@ -207,7 +207,7 @@ interface EventHandlerInterface{
                 $admin_note    .= 'Please, confirm from the order notes that there is no note of a successful transaction. If there is, this means that the user was debited and you either have to give value for the transaction or refund the customer.';
                 $this->order->add_order_note( $admin_note );
           }
-          
+
           /**
            * This is called when a transaction doesn't return with a success or a failure response. This can be a timedout transaction on the Flutterwave server or an abandoned transaction by the customer.
            * */
@@ -222,10 +222,10 @@ interface EventHandlerInterface{
                 $customer_note .= 'Please, contact us for information regarding this order.';
                 $admin_note     = 'Attention: New order has been placed on hold because we could not get a definite response from the payment gateway. Kindly contact the Flutterwave support team at hi@flutterwave.com to confirm the payment. <br>';
                 $admin_note    .= 'Payment Reference: '.$transactionReference;
-    
+
                 $this->order->add_order_note( $customer_note, 1 );
                 $this->order->add_order_note( $admin_note );
-            
+
                 wc_add_notice( $customer_note, 'notice' );
           }
       }

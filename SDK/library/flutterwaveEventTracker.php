@@ -1,6 +1,6 @@
 <?php
 
-namespace Sdk\Library;
+namespace FLW_SDK;
 
 Trait FlutterwaveEventTracker
 {
