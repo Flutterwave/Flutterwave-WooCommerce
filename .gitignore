@@ -23,3 +23,8 @@ yarn.lock
 .babelrc
 webpack.config.js
 .editorconfig
+../admin/node-modules
+../admin/package.json
+../admin/package-lock.json
+../admin/webpack.config.js
+../admin/.babelrc
