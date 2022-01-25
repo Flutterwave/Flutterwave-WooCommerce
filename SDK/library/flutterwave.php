@@ -1,6 +1,6 @@
 <?php
 
-namespace Sdk\Library;
+namespace FLW_SDK;
 
 class FlutterwaveSdk {
     protected $publicKey;
@@ -32,8 +32,9 @@ class FlutterwaveSdk {
     protected $overrideTransactionReference;
     protected $requeryCount = 0;
     protected $disableBarter;
+	protected $orderId;
     protected $context = array( 'source' => 'flutterwave_for_woocommerce' );
-    
+
     function __construct($publicKey, $secretKey, $prefix, $overrideRefWithPrefix = false){
         $this->publicKey = $publicKey;
         $this->secretKey = $secretKey;
@@ -46,26 +47,26 @@ class FlutterwaveSdk {
         $this->logger->notice('Flutterwave Class Initializes....', $this->context);
         return $this;
     }
-    
+
     /**
      * Generates a checksum value for the information to be sent to the payment gateway
      * @return object
      * */
     function createCheckSum(){
         $this->logger->notice('Generating Checksum....', $this->context);
-        $options = array( 
-            "PBFPubKey" => $this->publicKey, 
-            "amount" => $this->amount, 
-            "customer_email" => $this->customerEmail, 
-            "customer_firstname" => $this->customerFirstname, 
-            "customer_lastname" => $this->customerLastname, 
-            "txref" => $this->txref, 
-            "payment_options" => $this->paymentOptions, 
-            "country" => $this->country, 
-            "currency" => $this->currency, 
-            "custom_description" => $this->customDescription, 
-            "custom_logo" => $this->customLogo, 
-            "custom_title" => $this->customTitle, 
+        $options = array(
+            "PBFPubKey" => $this->publicKey,
+            "amount" => $this->amount,
+            "customer_email" => $this->customerEmail,
+            "customer_firstname" => $this->customerFirstname,
+            "customer_lastname" => $this->customerLastname,
+            "txref" => $this->txref,
+            "payment_options" => $this->paymentOptions,
+            "country" => $this->country,
+            "currency" => $this->currency,
+            "custom_description" => $this->customDescription,
+            "custom_logo" => $this->customLogo,
+            "custom_title" => $this->customTitle,
             "customer_phone" => $this->customerPhone,
             "pay_button_text" => $this->payButtonText,
             "redirect_url" => $this->redirectUrl,
@@ -76,24 +77,24 @@ class FlutterwaveSdk {
         if ($this->getDisableBarter() == 'yes'){
             $options['disable_pwb'] = true;
         }
-        
+
         ksort($options);
-        
+
         $this->transactionData = $options;
-        
+
         $hashedPayload = '';
-        
+
         foreach($options as $key => $value){
             $hashedPayload .= $value;
         }
 
         $completeHash = $hashedPayload.$this->secretKey;
         $hash = hash('sha256', $completeHash);
-        
+
         $this->integrityHash = $hash;
         return $this;
     }
-    
+
     /**
      * Generates a transaction reference number for the transactions
      * @return object
@@ -109,7 +110,7 @@ class FlutterwaveSdk {
         $logger->notice('Generated Reference Number....'.$this->txref, $this->context);
         return $this;
     }
-    
+
     /**
      * gets the current transaction reference number for the transaction
      * @return string
@@ -135,7 +136,7 @@ class FlutterwaveSdk {
     function getDisableBarter(){
         return $this->disableBarter;
     }
-    
+
     /**
      * Sets the transaction amount
      * @param integer $amount Transaction amount
@@ -145,7 +146,7 @@ class FlutterwaveSdk {
         $this->amount = $amount;
         return $this;
     }
-    
+
     /**
      * gets the transaction amount
      * @return string
@@ -153,17 +154,17 @@ class FlutterwaveSdk {
     function getAmount(){
         return $this;
     }
-    
+
     /**
      * Sets the allowed payment methods
-     * @param string $paymentOptions The allowed payment methods. Can be card, account or both 
+     * @param string $paymentOptions The allowed payment methods. Can be card, account or both
      * @return object
      * */
     function setPaymentOptions($paymentOptions){
         $this->paymentOptions = $paymentOptions;
         return $this;
     }
-    
+
     /**
      * gets the allowed payment methods
      * @return string
@@ -171,7 +172,7 @@ class FlutterwaveSdk {
     function getPaymentOptions(){
         return $this;
     }
-    
+
     /**
      * Sets the transaction description
      * @param string $customDescription The description of the transaction
@@ -181,7 +182,15 @@ class FlutterwaveSdk {
         $this->customDescription = $customDescription;
         return $this;
     }
-    
+
+	/**
+	 * set the order id of the transaction.
+	 */
+	function setOrderId($id){
+		$this->orderId = $id;
+		return $this;
+	}
+
     /**
      * gets the transaction description
      * @return string
@@ -189,7 +198,7 @@ class FlutterwaveSdk {
     function getDescription(){
         return $this->customDescription;
     }
-    
+
     /**
      * Sets the payment page logo
      * @param string $customLogo Your Logo
@@ -199,7 +208,7 @@ class FlutterwaveSdk {
         $this->customLogo = $customLogo;
         return $this;
     }
-    
+
     /**
      * gets the payment page logo
      * @return string
@@ -207,17 +216,17 @@ class FlutterwaveSdk {
     function getLogo(){
         return $this->customLogo;
     }
-    
+
     /**
      * Sets the payment page title
-     * @param string $customTitle A title for the payment. It can be the product name, your business name or anything short and descriptive 
+     * @param string $customTitle A title for the payment. It can be the product name, your business name or anything short and descriptive
      * @return object
      * */
     function setTitle($customTitle){
         $this->customTitle = $customTitle;
         return $this;
     }
-    
+
     /**
      * gets the payment page title
      * @return string
@@ -225,7 +234,7 @@ class FlutterwaveSdk {
     function getTitle(){
         return $this->customTitle;
     }
-    
+
     /**
      * Sets transaction country
      * @param string $country The transaction country. Can be NG, US, KE, GH and ZA
@@ -235,7 +244,7 @@ class FlutterwaveSdk {
         $this->country = $country;
         return $this;
     }
-    
+
     /**
      * gets the transaction country
      * @return string
@@ -243,7 +252,7 @@ class FlutterwaveSdk {
     function getCountry(){
         return $this->country;
     }
-    
+
     /**
      * Sets the transaction currency
      * @param string $currency The transaction currency. Can be NGN, GHS, KES, ZAR, USD, EUR and GBP
@@ -253,7 +262,7 @@ class FlutterwaveSdk {
         $this->currency = $currency;
         return $this;
     }
-    
+
     /**
      * gets the transaction currency
      * @return string
@@ -261,7 +270,7 @@ class FlutterwaveSdk {
     function getCurrency(){
         return $this->currency;
     }
-    
+
     /**
      * Sets the customer email
      * @param string $customerEmail This is the paying customer's email
@@ -271,7 +280,7 @@ class FlutterwaveSdk {
         $this->customerEmail = $customerEmail;
         return $this;
     }
-    
+
     /**
      * gets the customer email
      * @return string
@@ -279,7 +288,7 @@ class FlutterwaveSdk {
     function getEmail(){
         return $this->customerEmail;
     }
-    
+
     /**
      * Sets the customer firstname
      * @param string $customerFirstname This is the paying customer's firstname
@@ -289,7 +298,7 @@ class FlutterwaveSdk {
         $this->customerFirstname = $customerFirstname;
         return $this;
     }
-    
+
     /**
      * gets the customer firstname
      * @return string
@@ -297,7 +306,7 @@ class FlutterwaveSdk {
     function getFirstname(){
         return $this->customerFirstname;
     }
-    
+
     /**
      * Sets the customer lastname
      * @param string $customerLastname This is the paying customer's lastname
@@ -307,7 +316,7 @@ class FlutterwaveSdk {
         $this->customerLastname = $customerLastname;
         return $this;
     }
-    
+
     /**
      * gets the customer lastname
      * @return string
@@ -315,7 +324,7 @@ class FlutterwaveSdk {
     function getLastname(){
         return $this->customerLastname;
     }
-    
+
     /**
      * Sets the customer phonenumber
      * @param string $customerPhone This is the paying customer's phonenumber
@@ -325,7 +334,7 @@ class FlutterwaveSdk {
         $this->customerPhone = $customerPhone;
         return $this;
     }
-    
+
     /**
      * gets the customer phonenumber
      * @return string
@@ -333,7 +342,7 @@ class FlutterwaveSdk {
     function getPhoneNumber(){
         return $this->customerPhone;
     }
-    
+
     /**
      * Sets the payment page button text
      * @param string $payButtonText This is the text that should appear on the payment button on the Rave payment gateway.
@@ -343,7 +352,7 @@ class FlutterwaveSdk {
         $this->payButtonText = $payButtonText;
         return $this;
     }
-    
+
     /**
      * gets payment page button text
      * @return string
@@ -351,7 +360,7 @@ class FlutterwaveSdk {
     function getPayButtonText(){
         return $this->payButtonText;
     }
-    
+
     /**
      * Sets the transaction redirect url
      * @param string $redirectUrl This is where the Rave payment gateway will redirect to after completing a payment
@@ -361,7 +370,7 @@ class FlutterwaveSdk {
         $this->redirectUrl = $redirectUrl;
         return $this;
     }
-    
+
     /**
      * gets the transaction redirect url
      * @return string
@@ -369,7 +378,7 @@ class FlutterwaveSdk {
     function getRedirectUrl(){
         return $this->redirectUrl;
     }
-    
+
     /**
      * Sets the transaction meta data. Can be called multiple time to set multiple meta data
      * @param array $meta This are the other information you will like to store with the transaction. It is a key => value array. eg. PNR for airlines, product colour or attributes. Example. array('name' => 'femi')
@@ -379,7 +388,7 @@ class FlutterwaveSdk {
         array_push($this->meta, $meta);
         return $this;
     }
-    
+
     /**
      * gets the transaction meta data
      * @return string
@@ -387,7 +396,7 @@ class FlutterwaveSdk {
     function getMetaData(){
         return $this->meta;
     }
-    
+
     /**
      * Sets the event hooks for all available triggers
      * @param object $handler This is a class that implements the Event Handler Interface
@@ -397,7 +406,7 @@ class FlutterwaveSdk {
         $this->handler = $handler;
         return $this;
     }
-    
+
     /**
      * Requerys a previous transaction from the Rave payment gateway
      * @param string $referenceNumber This should be the reference number of the transaction you want to requery
@@ -442,7 +451,7 @@ class FlutterwaveSdk {
             $logger->error( $error_message );
         }else{
             $response  = json_decode(wp_remote_retrieve_body($response), true);
-        }  
+        }
 
         // echo "<pre>";
         // print_r($response);
@@ -450,7 +459,7 @@ class FlutterwaveSdk {
         // exit;
         // check the status is success
         if ( $response["status"] === "success") {
- 
+
             if( $response["data"]["status"] && $response["data"]["status"] === "successful"){
                 $logger->notice('Requeryed a successful transaction....'.json_encode($response["data"]), $this->context);
                 // Handle successful
@@ -478,7 +487,7 @@ class FlutterwaveSdk {
                     sleep(3);
                     $logger->notice('Now retrying requery...', $this->context);
                     $this->requeryTransaction($this->txref, $this->transaction_actual_id);
-                    
+
                 }
             }
         }else{
@@ -490,7 +499,7 @@ class FlutterwaveSdk {
         }
         return $this;
     }
-    
+
     /**
      * Generates the final json to be used in configuring the payment call to the rave payment gateway
      * @return string
@@ -498,16 +507,22 @@ class FlutterwaveSdk {
     function initialize(){
         $this->createCheckSum();
         $this->transactionData = array_merge($this->transactionData, array('integrity_hash' => $this->integrityHash), array('meta' => $this->meta));
-        
+
         if(isset($this->handler)){
             $this->handler->onInit($this->transactionData);
         }
-        
+
         $json = json_encode($this->transactionData);
         echo '<html>';
         echo '<body>';
         echo '<center>Proccessing...<br /><img src="'.plugins_url('SDK/ajax-loader.gif', WC_FLUTTERWAVE_PLUGIN_FILE).'" /></center>';
-        echo '<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>';
+
+		// echo wp_get_script_tag(
+		// 	array(
+		// 			'id'        => 'flutterwave-v3-inline',
+		// 			'src'       => esc_url( 'https://checkout.flutterwave.com/v3.js' ),
+		// 		)
+		// 	);
         echo '<script>';
         echo 'document.addEventListener("DOMContentLoaded", function(event) {';
         echo 'FlutterwaveCheckout({
@@ -526,7 +541,7 @@ class FlutterwaveSdk {
               console.log(data);
             },
             onclose: function() {
-                window.location = "?cancelled=cancelled";
+                window.location = "?cancelled=cancelled&order_id='.$this->orderId.'";
               },
             customizations: {
               title: "' . $this->customTitle . '",
@@ -542,7 +557,7 @@ class FlutterwaveSdk {
 
         return $json;
     }
-    
+
     /**
      * Handle canceled payments with this method
      * @param string $referenceNumber This should be the reference number of the transaction that was canceled
@@ -557,5 +572,5 @@ class FlutterwaveSdk {
         }
         return $this;
     }
-    
+
 }

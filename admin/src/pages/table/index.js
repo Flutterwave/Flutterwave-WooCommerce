@@ -54,7 +54,11 @@ const TableComp = ({ head, data, type }) => {
 										</Tag>
 									)}
 								</Td>
-								<Td>{moment(item.created_at).format("LLL")}</Td>
+								<Td>
+									{moment(new Date(item.created_at)).format(
+										"MMMM Do YYYY, h:mm a"
+									)}
+								</Td>
 							</Tr>
 						))}
 
