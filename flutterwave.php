@@ -145,4 +145,122 @@ function woocommerce_flutterwave_woocommerce_blocks_support()
 		);
 	}
 }
+
+
+
+/**
+*get all existing plans
+*
+* @param int $flutterwave_data FLW SETTINGS
+*/
+function get_plans($flutterwave_data){
+
+	// echo get_post_meta( get_the_ID(), 'flw_subaccount_assign', true );
+
+	$secret_key = (isset($flutterwave_data['go_live']) && $flutterwave_data['go_live'] == 'yes')? $flutterwave_data['live_secret_key']: $flutterwave_data['test_secret_key'] ;
+
+	// echo $auth;
+
+	$args = array(
+	  'headers' => array(
+		'Content-Type'=> 'application/json',
+		'Authorization' => 'Bearer '.$secret_key
+	  ),
+	);
+
+	//returns all the list of subaccounts created
+	$response_flw = wp_remote_get( 'https://api.flutterwave.com/v3/payment-plans', $args );
+
+	// echo "<pre>";
+	// print_r(json_decode(wp_remote_retrieve_body( $response_flw), true));
+	// echo "</pre>";
+	// exit();
+
+	$flw_response_body = json_decode(wp_remote_retrieve_body( $response_flw), true);
+
+	if ( is_wp_error( $response_flw ) ) {
+	  $error_message = $response_flw->get_error_message();
+	  echo "Something went wrong: $error_message";
+	}else{
+
+	  if($flw_response_body['status'] != 'success' && isset($flw_response_body['message'])){
+
+		echo "<p>".$flw_response_body['message']."</p>";
+	  }else{
+
+		$plan_list = $flw_response_body['data'];
+
+		echo '<label for="flw_plan_assign"> Assigned Plan:   </label>';
+		echo '<select name="flw_plan_assign">';
+		echo '<option value="">--Select Plan--</option>';
+		foreach ($plan_list as $plan) {
+
+				  echo '<option value="'.$plan['id'].'"'.selected( get_post_meta( get_the_ID(), 'flw_plan_assign', true ), $plan['id'], false ).'>'.$plan['name'].' </option>';
+
+		}
+		echo ' </select>';
+		// foreach ($plan_list as $plan) {
+		//   echo '<input type="hidden" name="flw_plan_amount_'.$plan['id'].'" value="'.$plan[''].'"/>';
+		// }
+	  }
+
+	}
+}
+
+
+/**
+* Save meta box content.
+*
+* @param int $post_id Post ID
+*/
+function flutterwave_save_paymentplan( $post_id ) {
+
+	// echo '<pre>';
+	// print_r($_POST);
+	// echo '</pre>';
+	// die();
+
+	if(!empty($_POST['flw_plan_assign'])){
+	  update_post_meta( $post_id, 'flw_plan_assign', $_POST['flw_plan_assign']);
+	}
+
+}
+
+add_action( 'save_post', 'flutterwave_save_paymentplan' );
+
+
+/**
+* check the flutterwave settings.
+*
+* @param array $flw_option FLUTTERWAVE SETTINGS
+*/
+function check_flw_option( $flw_option){
+
+
+	(empty($flw_option))? '<pre>Please Setup your Flutterwave account to assign a plan</pre>': get_plans($flw_option) ;
+
+}
+
+/**
+* Meta box display callback.
+*
+* @param WP_Post $post Current post object.
+*/
+function flutterwave_add_plan_callback( $post_id ) {
+
+	$flutterwave_data = get_option('woocommerce_flutterwave_settings');
+
+	check_flw_option($flutterwave_data);
+
+}
+
+
+
+/**
+ * Register meta box(es).
+ */
+function flutterwave_plan_meta_boxes() {
+	add_meta_box( 'flutterwave_plan_box', 'Flutterwave - Add Payment Plan', 'flutterwave_add_plan_callback', ['product'], 'side');
+}
+add_action( 'add_meta_boxes', 'flutterwave_plan_meta_boxes' );
 run_wc_flutterwave();

@@ -93,6 +93,10 @@ var processPayment = function () {
 		},
 	};
 
+	if (flw_payment_args.plan) {
+		ravePayload.payment_plan = flw_payment_args.plan;
+	}
+
 	//check for subaccounts
 	//check for paymentplan
 

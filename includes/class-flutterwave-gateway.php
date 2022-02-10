@@ -70,7 +70,7 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
         $this->barter = $this->get_option( 'barter' );
         $this->logging_option = $this->get_option('logging_option');
         $this->secret_hash = $this->get_option( 'secret_hash' );
-
+		$this->plan_id = '';
         $this->country ="";
         $this->supports = array(
           'products',
@@ -307,6 +307,16 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
 			  $currency     = $order->get_currency();
 		  }
 
+
+		  $items = $order->get_items();
+          foreach ( $items as $item ) {
+            $product_name = $item->get_name();
+            $product_id = (int)$item->get_product_id();
+				if(!empty(get_post_meta( $product_id, 'flw_plan_assign', true )))
+				{
+					$this->plan_id = get_post_meta( $product_id, 'flw_plan_assign', true );
+				}
+			}
 		  // $amount    = $order->order_total;
 		  // $email     = $order->billing_email;
 		  // $currency     = $order->get_order_currency();
@@ -343,6 +353,7 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
 			$payment_args['firstname'] = $order->get_billing_first_name();
 			$payment_args['lastname'] = $order->get_billing_last_name();
 			$payment_args['barter'] = $this->barter;
+			$payment_args['plan'] = (empty($this->plan_id)) ? '' : $this->plan_id;
 		  }
 
 		  update_post_meta( $order_id, '_flw_payment_txn_ref', $txnref );
