@@ -353,7 +353,7 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
 			$payment_args['firstname'] = $order->get_billing_first_name();
 			$payment_args['lastname'] = $order->get_billing_last_name();
 			$payment_args['barter'] = $this->barter;
-			$payment_args['plan'] = (empty($this->plan_id)) ? '' : $this->plan_id;
+			$payment_args['plan'] = (empty($this->plan_id)) ? '' : (int) $this->plan_id;
 		  }
 
 		  update_post_meta( $order_id, '_flw_payment_txn_ref', $txnref );
