@@ -70,7 +70,7 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
         $this->barter = $this->get_option( 'barter' );
         $this->logging_option = $this->get_option('logging_option');
         $this->secret_hash = $this->get_option( 'secret_hash' );
-
+		$this->plan_id = '';
         $this->country ="";
         $this->supports = array(
           'products',
@@ -288,7 +288,7 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
 		  $order     = wc_get_order( $order_id );
 
 		  $txnref    = "WOOC_" . $order_id . '_' . time();
-		  $txnref    = filter_var($txnref, FILTER_SANITIZE_STRING);//sanitizr=e this field
+		  $txnref    = filter_var($txnref, FILTER_SANITIZE_STRING);//sanitize this field
 
 		  if (version_compare(WOOCOMMERCE_VERSION, '2.7.0', '>=')){
 				$amount    = $order->get_total();
@@ -307,6 +307,16 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
 			  $currency     = $order->get_currency();
 		  }
 
+
+		  $items = $order->get_items();
+          foreach ( $items as $item ) {
+            $product_name = $item->get_name();
+            $product_id = (int)$item->get_product_id();
+				if(!empty(get_post_meta( $product_id, 'flw_plan_assign', true )))
+				{
+					$this->plan_id = get_post_meta( $product_id, 'flw_plan_assign', true );
+				}
+			}
 		  // $amount    = $order->order_total;
 		  // $email     = $order->billing_email;
 		  // $currency     = $order->get_order_currency();
@@ -343,6 +353,7 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
 			$payment_args['firstname'] = $order->get_billing_first_name();
 			$payment_args['lastname'] = $order->get_billing_last_name();
 			$payment_args['barter'] = $this->barter;
+			$payment_args['plan'] = (empty($this->plan_id)) ? '' : (int) $this->plan_id;
 		  }
 
 		  update_post_meta( $order_id, '_flw_payment_txn_ref', $txnref );
@@ -539,36 +550,20 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
 		// Remember that this is a call from rave's servers and
 		// Your customer is not seeing the response here at all
 		$response = json_decode($body);
-		if ($response->status == 'successful') {
-		  $getOrderId = explode('_', $response->txRef);
-		  $orderId = $getOrderId[1];
-		  // $order = wc_get_order( $orderId );
-		  $order = new WC_Order($orderId);
-
-		  if ($order->status == 'pending') {
-			$order->update_status('processing');
-			$order->add_order_note('Payment was successful on Rave and verified via webhook');
-			$customer_note  = 'Thank you for your order.<br>';
-
-			$order->add_order_note( $customer_note, 1 );
-
-			wc_add_notice( $customer_note, 'notice' );
-
-		  }
-
-
-		  $order->payment_complete($order->id);
-		  $order->add_order_note('Payment was successful on Rave and verified via webhook');
-		  $order->add_order_note('Flutterwave transaction reference: '.$response->flwRef);
-		  $customer_note  = 'Thank you for your order.<br>';
-		  $customer_note .= 'Your payment was successful, we are now <strong>processing</strong> your order.';
-
-		  $order->add_order_note( $customer_note, 1 );
-
-		  wc_add_notice( $customer_note, 'notice' );
-		  // $this->flw_verify_payment();
-		}
-		exit();
+		if ($response->status == 'successful'|| $response->data->status == 'successful') {
+			$getOrderId = explode('_', $response->txRef ?? $response->data->tx_ref);
+			$orderId = $getOrderId[1];
+			// $order = wc_get_order( $orderId );
+			$order = new WC_Order($orderId);
+			$secretKey = $this->secret_key;
+			$publicKey = $this->public_key;
+			$payment = new Rave($publicKey, $secretKey, $txn_ref, $overrideRef, $this->logging_option);
+			$payment->eventHandler(new myEventHandler($order))->requeryTransaction( $response->txRef ?? $response->data->tx_ref );
+			do_action('flw_webhook_after_action', json_encode($response, TRUE));
+		  }else{
+				do_action('flw_webhook_transaction_failure_action', json_encode($response, TRUE));
+			}
+		  exit();
 	}
 }
 

@@ -8,9 +8,7 @@ var amount = flw_payment_args.amount,
 	firstname = flw_payment_args.firstname,
 	lastname = flw_payment_args.lastname,
 	form = jQuery("#flw-pay-now-button"),
-	// logo   = flw_payment_args.logo || raveLogo,
 	p_key = flw_payment_args.p_key,
-	title = flw_payment_args.title,
 	txref = flw_payment_args.txnref,
 	paymentOptions = flw_payment_args.payment_options,
 	paymentStyle = flw_payment_args.payment_style,
@@ -49,16 +47,12 @@ switch (curr) {
 }
 
 var processPayment = function () {
-	// console.log(firstname+" .......... "+lastname);
-
 	// setup payload
 	var ravePayload = {
 		amount: amount,
 		country: country,
 		currency: curr,
 		custom_description: desc,
-		custom_title: title,
-		// custom_logo: logo,
 		tx_ref: txref,
 		customer: {
 			email: email,
@@ -87,11 +81,15 @@ var processPayment = function () {
 			popup.close(); // close modal
 		},
 		customizations: {
-			title: title,
+			title: flw_payment_args.title,
 			description: desc,
 			logo: "",
 		},
 	};
+
+	if (flw_payment_args.plan) {
+		ravePayload.payment_plan = flw_payment_args.plan;
+	}
 
 	//check for subaccounts
 	//check for paymentplan

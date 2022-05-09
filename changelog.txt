@@ -1,0 +1,40 @@
+20.02.2022 - 1.1.1
+------------------
+New features
+- Added Subscription Plan for Products.
+
+Other changes
+- Webhook handler update.
+
+15.09.2021 - 1.1.0
+------------------
+Fixed bugs
+- fix: conflict with WooCommerce Admin.
+
+08.08.2021 - 1.0.0
+------------------
+New features
+- Added new Payment Methods.
+- Flutterwave SDK now using WC-logger
+
+Fixed bugs
+- fix: Motion package removed.
+
+14.06.2021 - 0.1.1
+------------------
+New features
+- Added Support for Woocommerce Blocks.
+
+Fixed bugs
+- Fixed the webhook url displayed.
+
+22.04.2021 - 0.1.0
+------------------
+New features
+- Update: Updated Admin Frontend.
+
+Fixed bugs
+- Fix: Conflict with WooCommerce.
+
+Other changes
+- Improved performance for UI components.
