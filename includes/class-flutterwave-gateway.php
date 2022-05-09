@@ -288,7 +288,7 @@ class WC_Flutterwave_Gateway extends WC_Payment_Gateway
 		  $order     = wc_get_order( $order_id );
 
 		  $txnref    = "WOOC_" . $order_id . '_' . time();
-		  $txnref    = filter_var($txnref, FILTER_SANITIZE_STRING);//sanitizr=e this field
+		  $txnref    = filter_var($txnref, FILTER_SANITIZE_STRING);//sanitize this field
 
 		  if (version_compare(WOOCOMMERCE_VERSION, '2.7.0', '>=')){
 				$amount    = $order->get_total();
