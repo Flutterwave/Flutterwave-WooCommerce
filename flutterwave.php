@@ -8,7 +8,7 @@
  * Author URI:      http://developer.flutterwave.com
  * Text Domain:     flutterwave
  * Domain Path:     /languages
- * Version:         1.1.0
+ * Version:         1.1.1
  * Tested up to: 5.8
  * WC tested up to: 5.5
  * WC requires at least: 2.6
@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly
 }
 
-define('WC_FLUTTERWAVE_VERSION', '1.1.0');
+define('WC_FLUTTERWAVE_VERSION', '1.1.1');
 define('WC_FLUTTERWAVE_PLUGIN_FILE', __FILE__);
 define('WC_FLUTTERWAVE_DIR_PATH', plugin_dir_path(WC_FLUTTERWAVE_PLUGIN_FILE));
 define('WC_FLUTTERWAVE_URL', trailingslashit(plugins_url('/', __FILE__)));
